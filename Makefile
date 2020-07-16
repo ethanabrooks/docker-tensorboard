@@ -1,4 +1,5 @@
 all:
+	docker build --tag tensorboard .
 	mkdir -p build/tb-0.1
 	cp tb build/tb-0.1
 	cd build/tb-0.1; \
