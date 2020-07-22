@@ -1,4 +1,10 @@
 #! /usr/bin/env bash
+existing=$(docker ps -f name=tensorboard -q)
+if [[ $existing != "" ]]
+then
+  echo docker kill $existing 
+  docker kill $existing 
+fi
 my_ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
-echo docker run -d --rm -it -v $2:/log -p $my_ip:$1:6006 tensorboard
-docker run -d --rm -it -v $2:/log -p $my_ip:$1:6006 tensorboard
+echo docker run --detach --rm -it --name tensorboard -v $2:/log -p $my_ip:$1:6006 tensorboard
+docker run --detach --rm -it --name tensorboard -v $2:/log -p $my_ip:$1:6006 tensorboard
