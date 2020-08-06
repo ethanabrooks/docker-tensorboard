@@ -10,7 +10,7 @@ for v in "$@"; do
   volumes+=("-v $v:/log/$v")
 done
 my_ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
-cmd="docker run --detach --rm -it --name tensorboard$1 ${volumes[@]} -p $my_ip:$1:6006 tensorboard"
+cmd="docker run --rm -itd --label RUN --name tensorboard$1 ${volumes[@]} -p $my_ip:$1:6006 tensorboard"
 echo $cmd
 id=$(exec $cmd)
 echo docker logs -f $id
