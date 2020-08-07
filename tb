@@ -5,21 +5,36 @@ then
   echo docker kill $existing 
   docker kill $existing 
 fi
-if [[ $# -gt 1 ]]
+volume_paths=()
+other_args=()
+port=1700
+while getopts ":p:v:" opt; do
+  case ${opt} in
+    v )
+      volume_paths+=("$OPTARG")
+      ;;
+    p )
+      port=$OPTARG
+      ;;
+    \? )
+      other_args+=($OPTARG)
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+volume_args=()
+if [[ ${#volume_paths[@]} -eq 0 ]]
 then
-  volumes="${@:2}"
-else
   recent=$(docker ps -q -n 1)
-  volumes=$(docker inspect --format='{{range .Mounts}}{{.Name}}{{end}}' $recent)
+  volume_paths=$(docker inspect --format='{{range .Mounts}}{{.Name}}{{end}}' $recent)
 fi
 volume_args=()
-for v in $volumes; do
-  echo $v
+for v in ${volume_paths[@]}; do
   volume_args+=("-v $v:/log/$v")
-  echo $volume_args
 done
 my_ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
-cmd="docker run --rm -itd --label RUN --name tensorboard$1 ${volume_args[@]} -p $my_ip:$1:6006 tensorboard"
+cmd="docker run --rm -itd --label RUN --name tensorboard$1 ${volume_args[@]} ${other_args[@]} -p $my_ip:$port:6006 tensorboard"
 echo $cmd
 id=$(exec $cmd)
 echo docker logs -f $id
