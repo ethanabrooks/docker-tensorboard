@@ -38,7 +38,8 @@ for v in ${volume_paths[@]}; do
   volume_args+=("-v $v:/log/$v")
 done
 my_ip=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
-cmd="docker run --rm -itd --name tensorboard$port ${volume_args[@]} ${other_args[@]} -p $my_ip:$port:6006 tensorboard"
+cmd="docker run --rm -itd --name tensorboard$port ${volume_args[@]}
+${other_args[@]} -p $my_ip:$port:6006 ethanabrooks/tensorboard"
 echo $cmd
 id=$(exec $cmd)
 echo docker logs -f $id
