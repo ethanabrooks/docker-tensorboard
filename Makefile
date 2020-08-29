@@ -10,7 +10,7 @@ deb: docker clean
 		debuild -us -uc
 
 docker:
-	docker build --tag tensorboard .
+	docker build --tag ethanabrooks/tb .
 
 clean:
 	rm -rf build
